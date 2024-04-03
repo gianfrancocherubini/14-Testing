@@ -32,17 +32,30 @@
 
   // Función cambiar de rol de usuario
 
-  const cambiarRolUsuario = async (id) => {
-  
-    let resultado = await fetch("/api/perfil/premium/"+id, {
+const cambiarRolUsuario = async (id) => {
+  try {
+    // 1) Realizar la solicitud POST para cambiar el rol del usuario
+    let resultado = await fetch("/api/perfil/premium/" + id, {
       method: "post"
     });
 
     if (resultado.ok) {
-      const usuario = await resultado.json();
-      alert(`Tu rol ha sido cambiado a {{usuario.rol}}.`);
+      
       location.reload();
+      
+      const nuevaSolicitud = await fetch("/api/perfil/usuario/" + id);
+      
+      if (nuevaSolicitud.ok) {
+        const usuario = await nuevaSolicitud.json();
+        alert(`Tu rol ha sido cambiado a ${usuario.rol}.`);
+      } else {
+        console.error("La solicitud GET para obtener el usuario no fue exitosa.");
+      }
+    } else {
+      console.error("La solicitud POST para cambiar el rol no fue exitosa.");
     }
-  
-}
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
 </script>

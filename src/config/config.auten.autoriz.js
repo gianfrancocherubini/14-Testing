@@ -34,7 +34,7 @@ export const isUsuario = (req, res, next) => {
     next();
 };
 
-export const isAdminPremium = (req, res, next) => {
+export const isAdminOrPremium = (req, res, next) => {
   if (req.session.rol === 'administrador' || req.session.rol === 'premium') {
     return;
   } 

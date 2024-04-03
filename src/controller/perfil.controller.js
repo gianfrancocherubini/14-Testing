@@ -18,7 +18,34 @@ export class PerfilController {
     
     }
 
-    static async ConsultasWs(req,res){
+    static async buscarUsuario(req, res) {
+        try {
+          
+            const usuarioId = req.params.cid;
+            let usuario = req.session.usuario;
+      
+            if (!usuario) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(401).json({ error: "Usuario no autenticado" });
+                return;
+            }
+      
+            if (usuario.id !== usuarioId) {
+                res.setHeader('Content-Type', 'application/json');
+                res.status(403).json({ error: "Acceso no autorizado" });
+                return;
+            }
+      
+            res.setHeader('Content-Type', 'application/json');
+            res.status(200).json(usuario);
+        } catch (error) {
+            req.logger.error("Error inesperado en el servidor - Intente más tarde, o contacte a su administrador")
+            res.setHeader('Content-Type', 'application/json');
+            res.status(500).json({ error: "Error inesperado en el servidor - Intente más tarde, o contacte a su administrador" });
+        }
+    }
+
+    static async consultasWs(req,res){
         
         const consulta = req.body.consulta; 
         try {
@@ -28,13 +55,13 @@ export class PerfilController {
             res.setHeader('Content-Type', 'text/html');
             res.status(201).render('perfil',{ mensajeEnviado, usuario, login: true });
         } catch (error) {
-            req.logger.error("Error al enviar consulta")
+            req.logger.error("Error inesperado en el servidor - Intente más tarde, o contacte a su administrador")
             res.setHeader('Content-Type', 'text/html');
-            res.status(500).send("Error al enviar la consulta. Por favor, inténtalo de nuevo más tarde.");
+            res.status(500).send("Error inesperado en el servidor - Intente más tarde, o contacte a su administrador");
         }
     }
 
-    static async CambiarUsuario(req, res) {
+    static async cambiarUsuario(req, res) {
 
         const usuarioId = req.params.cid;
         let usuario = req.session.usuario;
@@ -57,9 +84,9 @@ export class PerfilController {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(`Usuario: ${usuarioId} cambiado de rol`);
         } catch (error) {
-            req.logger.error(`Error al cambiar el rol del usuario ${error}`);
+            req.logger.error(`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`);
             res.setHeader('Content-Type', 'application/json');
-            res.status(500).json("Error al cambiar el rol del usuario. Por favor, inténtalo de nuevo más tarde.");
+            return res.status(500).json({error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`})
         }
     }
 
